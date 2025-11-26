@@ -1,0 +1,12 @@
+:root {
+    --header-h: 56px;
+    --footer-h: 40px;
+    --sidebar-w: 260px;
+}
+
+/* keep full height layout behavior */
+html,
+body,
+#app {
+    height: 100%;
+}
