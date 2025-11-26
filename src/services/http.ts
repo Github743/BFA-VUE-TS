@@ -1,3 +1,4 @@
+import { ApiResponse } from "@/models/ApiResponse";
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
@@ -80,15 +81,13 @@ function buildQuery(params?: Record<string, any>): string {
   return s ? `?${s}` : "";
 }
 
-
-
-export async function get<T = any>(url: string, params?: Record<string, any>): Promise<T> {
+export async function get<T = any>(url: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
   const full = `${API_BASE}${url}${buildQuery(params)}`;
   const resp = await fetch(full, { method: "GET", headers: { "Content-Type": "application/json" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const data = await resp.json();
   // if your server wraps responses, unwrap here
-  return data as T;
+  return data as ApiResponse<T>;
 }
 
 export async function post<T>(

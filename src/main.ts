@@ -7,9 +7,12 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+import "flatpickr/dist/flatpickr.css";
+
 import './style.css'
 import App from './App.vue'
 import router from "./router";
+import FlatPickr from "vue-flatpickr-component";
 
 const app = createApp(App)
 
@@ -18,5 +21,7 @@ pinia.use(piniaPluginPersistedstate);
 
 app.use(pinia);
 app.use(router);
+
+app.component("FlatPickr", FlatPickr);
 
 app.mount('#app')
