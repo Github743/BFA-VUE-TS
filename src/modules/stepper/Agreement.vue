@@ -11,79 +11,40 @@
       <!-- Tabs -->
       <ul class="nav nav-tabs mb-3 border-0">
         <li class="nav-item me-2">
-          <button class="btn btn-primary active" data-bs-toggle="tab">
+          <button
+            class="btn"
+            :class="activeTab === 'bfa' ? 'btn-primary' : 'btn-outline-primary'"
+            @click="activeTab = 'bfa'"
+          >
             BFA Products
           </button>
         </li>
 
         <li class="nav-item">
-          <button class="btn btn-outline-primary" data-bs-toggle="tab">
+          <button
+            class="btn"
+            :class="
+              activeTab === 'discounts' ? 'btn-primary' : 'btn-outline-primary'
+            "
+            @click="activeTab = 'discounts'"
+          >
             Additional Discounts
           </button>
         </li>
       </ul>
-
-      <!-- Section Title -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h6 class="fw-bold mb-0">
-          Combined Block Fee for ISM-ISPS-MLC (21–30 Ships)
-        </h6>
-
-        <button class="btn btn-outline-primary btn-sm">+ Add Discount</button>
-      </div>
-
-      <!-- Table -->
-      <BaseTable :columns="columns" :rows="rows" :enableBulkDelete="false">
-        <template #amount="{ row }">{{
-          formatMoney(row.amount)
-        }}</template></BaseTable
-      >
+      <BfaProductGrid v-if="activeTab === 'bfa'" />
+      <AdditionalDiscountGrid v-else-if="activeTab === 'discounts'" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-  import BaseTable, { Column } from "@/components/common/BaseTable.vue";
+  import AdditionalDiscountGrid from "@/components/ClientAgreement/AdditionalDiscountGrid.vue";
+  import BfaProductGrid from "@/components/ClientAgreement/BfaProductGrid.vue";
   import ClientDetails from "@/components/common/ClientDetails.vue";
-  import { BfaProduct } from "@/models/BfaProduct";
-  import { getEntityProducts } from "@/services/bfaProductService";
-  import { showToast } from "@/shared/utils/toast";
-  import { ref, onMounted, reactive } from "vue";
 
-  function formatMoney(n: number | string | null | undefined): string {
-    const num = typeof n === "number" ? n : parseFloat(n ?? "0");
-    return num.toFixed(2);
-  }
+  import { ref } from "vue";
 
-  const rows = ref<BfaProduct[]>([]);
-
-  const columns: Column<BfaProduct>[] = [
-    {
-      field: "workOrderClientAgreementId",
-      label: "workOrderClientAgreementId",
-      hidden: true,
-    },
-    { field: "productCode", label: "PRODUCT" },
-    { field: "amount", label: "DISCOUNT" },
-    { field: "discountTypeName", label: "DISCOUNT TYPE" },
-  ];
-  onMounted(async () => {
-    try {
-      const result = await getEntityProducts(1156999);
-
-      if (!result.success) {
-        showToast("Invalid workorder id", "danger");
-      }
-      if (Array.isArray(result.data)) {
-        rows.value = result.data as BfaProduct[];
-      } else if (result.data) {
-        rows.value = [result.data as BfaProduct];
-      } else {
-        rows.value = [];
-      }
-    } catch (err) {
-      showToast("Invalid workorder id", "danger");
-    }
-  });
+  const activeTab = ref<"bfa" | "discounts">("bfa");
 </script>
 <style scoped>
   .header-row {
