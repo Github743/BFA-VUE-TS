@@ -37,6 +37,16 @@
   import type { Client } from "@/types/client";
   import Breadcrumbs from "@/components/common/Breadcrumbs.vue";
   import { useClientStore } from "@/stores/clientStore";
+  import { CLIENT_ROLES } from "@/constants/bfaConstants";
+  import { hasRole } from "@/helpers/bfaHelper";
+  import { post } from "@/services/http";
+  import { ApiResponse } from "@/models/ApiResponse";
+  import { Workorder } from "@/models/WorkOrder";
+  import { useWorkflowStore } from "@/stores/workflowStore";
+  import {
+    createWorkOrder,
+    type CreateWorkOrderPayload,
+  } from "@/services/workOrderService";
 
   defineOptions({ name: "CustomerLayout" });
   const props = defineProps<{ nextLayout?: string }>();
@@ -106,10 +116,41 @@
       const id = client.clientNumber;
       const store = useClientStore();
       await store.setClientId(id, { load: true, force: false });
-      const rolesRaw = client.clientRoles ?? "";
-      router.push({
-        name: "IssueWorkflow",
-      });
+      const clientRoles = client.clientRoles ?? "";
+
+      const hasBfaRole = hasRole(clientRoles, CLIENT_ROLES.CLIENT_ROLE_BFA);
+      if (hasBfaRole) {
+        showToast(
+          "This client is already enrolled in BFA program. Please proceed with Amend.",
+          "warning",
+          "Warning",
+          true,
+          5000
+        );
+        return;
+      }
+
+      const payload: CreateWorkOrderPayload = {
+        clientId: client.clientId,
+        clientNumber: client.clientNumber,
+        entities: [{ clientId: client.clientId ?? client.id }],
+      };
+
+      const createWO = await createWorkOrder(payload);
+
+      if (createWO.success) {
+        const useWorkOrderstore = useWorkflowStore();
+        useWorkOrderstore.setWorkOrderId(createWO.data?.workOrderId ?? 0);
+        useWorkOrderstore.setCurrentStep(0);
+        router.push({
+          name: "IssueWorkflow",
+        });
+      } else {
+        showToast(
+          createWO.errorMessage || "Something went wrong! Please try again.",
+          "danger"
+        );
+      }
     } catch (err: any) {
       const serverMsg = err?.response?.data?.message || err?.message;
       showToast(

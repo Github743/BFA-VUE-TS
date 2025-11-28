@@ -52,10 +52,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: "Terminate Block Fee Agreement", sidebar: true },
     props: { nextLayout: "bfa" },
   },
-  {path: "/bfa/workflow",
+  {
+    path: "/bfa/workflow",
     name: "IssueWorkflow",
-  meta: { sidebar: true },
-  component: () => import("@/modules/stepper/Workflow.vue"),}
+    meta: { sidebar: true },
+    component: () => import("@/modules/stepper/Workflow.vue"),
+  }
 ]
 
 const router = createRouter({

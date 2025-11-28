@@ -1,6 +1,6 @@
 export type Client = {
-  clientId: string | number;
-  clientNumber: string;
+  clientId: number;
+  clientNumber: number;
   clientName: string;
   [key: string]: any;
 };

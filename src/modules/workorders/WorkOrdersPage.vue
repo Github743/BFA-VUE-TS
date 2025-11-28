@@ -73,7 +73,6 @@
   }
 
   function onEdit(item: WorkOrder) {
-    console.log("edit", item);
     // navigate or open modal
   }
   function onPageSize(newSize: number) {
@@ -83,15 +82,9 @@
     page.value = 1;
   }
 
-  function onDelete(item: WorkOrder) {
-    console.log("delete", item);
-    // confirm & call API
-  }
+  function onDelete(item: WorkOrder) {}
 
-  function onView(item: WorkOrder) {
-    console.log("view", item);
-    // navigate to details
-  }
+  function onView(item: WorkOrder) {}
 
   // initial load: default empty filters
   loadWorkorders({}, 1);

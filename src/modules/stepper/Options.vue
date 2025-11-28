@@ -109,8 +109,11 @@
   import { getWorkOrderOptions } from "@/services/optionService";
   import { showToast } from "@/shared/utils/toast";
   import { useClientStore } from "@/stores/clientStore";
+  import { useWorkflowStore } from "@/stores/workflowStore";
+  import router from "@/router";
 
   const clientStore = useClientStore();
+  const workOrdeStore = useWorkflowStore();
 
   const BfaOption = reactive<BfaOption>({
     isMLCOption: false,
@@ -157,9 +160,12 @@
 
   onMounted(async () => {
     try {
-      const result = await getWorkOrderOptions(1156999);
+      const result = await getWorkOrderOptions(workOrdeStore.workOrderId);
 
       if (!result.success) {
+        router.push({
+          name: "/bfa/issue",
+        });
         showToast("Invalid workorder id", "danger");
       }
       if (result.success && result.data) {
@@ -167,6 +173,7 @@
         Object.assign(BfaOption, result.data);
       }
     } catch (err) {
+      router.push({ path: "/bfa/issue" });
       showToast("Invalid workorder id", "danger");
     }
   });

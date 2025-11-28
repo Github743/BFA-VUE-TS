@@ -5,7 +5,15 @@
       Combined Block Fee for ISM-ISPS-MLC (21–30 Ships)
     </h6>
 
-    <button class="btn btn-outline-primary btn-sm">+ Add Discount</button>
+    <button class="btn btn-outline-primary btn-sm" @click="showAdd = true">
+      + Add Discount
+    </button>
+    <AddDiscountModal
+      v-model:visible="showAdd"
+      :workOrderId="workOrderId"
+      @save="onDiscountsSaved"
+      @close="showAdd = false"
+    />
   </div>
 
   <!-- Table -->
@@ -83,18 +91,12 @@
 
               <div class="mb-3">
                 <label class="form-label">Discount Type</label>
-                <select
-                  class="form-select"
-                  v-model="form.discountTypeName"
-                  required
-                >
+                <select v-model="form.discountType" class="form-select">
                   <option value="">Select discount type</option>
-
-                  <!-- dynamic options -->
                   <option
                     v-for="t in discountTypes"
                     :key="t.code"
-                    :value="t.name"
+                    :value="t.code"
                   >
                     {{ t.name }}
                   </option>
@@ -145,17 +147,45 @@
   import { showToast } from "@/shared/utils/toast";
   import { onMounted, ref, toRaw } from "vue";
 
-  import LoadingOverlay from "../common/LoadingOverlay.vue";
+  import LoadingOverlay from "@/components/common/LoadingOverlay.vue";
   import confirmDialog from "@/shared/utils/confirm";
+  import AddDiscountModal from "./AddDiscountModal.vue";
+  import { SaveDiscountPayload } from "./SaveDiscountPayload";
+  import { WorkOrderClientAgreementEntityProduct } from "@/models/WorkOrderClientAgreementEntityProduct";
+
+  const showAdd = ref(false);
+  const workOrderId = 1156999;
 
   const loading = ref(false);
   const showModal = ref(false);
   const discountTypes = ref<{ code: number; name: string }[]>([]);
 
+  async function onDiscountsSaved(payload: SaveDiscountPayload) {
+    const products: WorkOrderClientAgreementEntityProduct[] = payload.rows.map(
+      (r) => {
+        return {
+          defaultOrder: r.defaultOrder,
+          discountType: r.discountType,
+          systemProductId: Number(r.systemProductId ?? 0),
+          discountTypeName: r.discountTypeName,
+          amount: r.amount,
+          isCustomized: false,
+          isAdditionalDiscount: false,
+          limitPerYear: null,
+          expiryDate: "",
+          startDate: "",
+          tonnageBilling: null,
+          isOngoingDiscount: null,
+        };
+      }
+    );
+
+    showToast("Discounts saved (client-side).", "success");
+  }
+
   async function loadDiscountTypes() {
     try {
       const res = await getDiscountTypes("DiscountType");
-
       discountTypes.value = (Array.isArray(res) ? res : []).map((d) => ({
         code: d.lookupId,
         name: d.displayName,

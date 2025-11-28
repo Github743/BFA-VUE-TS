@@ -9,7 +9,6 @@ export async function getClientById(
 
   // Use your existing GET function
   const raw = await get<Client[]>("/clients", { clientSearch: id });
-  console.log(raw);
   if (!raw) return null;
 
   // raw may be: [] OR [client] OR { data: [...] } depending on API

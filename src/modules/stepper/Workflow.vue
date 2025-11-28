@@ -1,30 +1,32 @@
 <template>
   <div class="px-3">
     <Breadcrumbs />
+
     <StepperAnimated
       :steps="steps"
-      :current="currentStep"
+      :current="workflow.currentStep"
       @update:current="goToStep"
       @step-click="onStepClick"
       clickable
     />
 
     <div class="step-content mt-4">
-      <component :is="currentComponent" />
+      <!-- Automatically gives workOrderId from store to child -->
+      <component :is="currentComponent" :workOrderId="workflow.workOrderId" />
     </div>
 
     <div class="d-flex gap-3 justify-content-center mt-4">
       <button
         class="btn btn-outline-secondary"
         @click="prev"
-        :disabled="currentStep === 0"
+        :disabled="workflow.currentStep === 0"
       >
         Back
       </button>
       <button
         class="btn btn-primary"
         @click="next"
-        :disabled="currentStep >= steps.length - 1"
+        :disabled="workflow.currentStep >= steps.length - 1"
       >
         Next
       </button>
@@ -43,6 +45,7 @@
   import Document from "./Document.vue";
   import Summary from "./Summary.vue";
   import Breadcrumbs from "@/components/common/Breadcrumbs.vue";
+  import { useWorkflowStore } from "@/stores/workflowStore";
 
   const steps = [
     {
@@ -83,8 +86,9 @@
     },
   ];
 
-  // <<-- SET OPTIONS (index 0) AS DEFAULT -->
-  const currentStep = ref(0); // was 1; now default to Options
+  const workflow = useWorkflowStore();
+
+  const currentStep = ref(0);
 
   // map index -> component
   const components = [
@@ -96,21 +100,28 @@
     Summary,
   ];
 
-  const currentComponent = computed(() => components[currentStep.value]);
+  const currentComponent = computed(() => {
+    return components[workflow.currentStep];
+  });
 
-  function goToStep(i: number) {
-    currentStep.value = i;
+  function goToStep(step: number) {
+    workflow.setCurrentStep(step);
   }
-  function onStepClick(i: number) {
-    // optional: confirm or check permissions before navigating
-    goToStep(i);
+
+  function onStepClick(step: number) {
+    goToStep(step);
   }
 
   function next() {
-    if (currentStep.value < steps.length - 1) currentStep.value++;
+    if (workflow.currentStep < steps.length - 1) {
+      workflow.setCurrentStep(workflow.currentStep + 1);
+    }
   }
+
   function prev() {
-    if (currentStep.value > 0) currentStep.value--;
+    if (workflow.currentStep > 0) {
+      workflow.setCurrentStep(workflow.currentStep - 1);
+    }
   }
 </script>
 

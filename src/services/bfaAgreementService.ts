@@ -19,7 +19,19 @@ export async function getDiscountTypes(LookupTypeName: string): Promise<ApiRespo
 }
 
 
+export async function getSchedules(workOrderId: number, systemDiscountProgramId: number): Promise<ApiResponse<SystemDiscountSchedule>> {
+  const resp = await get("/schedules", { workOrderId, systemDiscountProgramId });
+  return resp as ApiResponse<SystemDiscountSchedule>;
+}
+
+export async function getScheduleProducts(systemDiscountScheduleId: number): Promise<ApiResponse<SystemDiscountScheduleProducts>> {
+  const resp = await get("/schedule-products", { systemDiscountScheduleId });
+  return resp as ApiResponse<SystemDiscountScheduleProducts>;
+}
+
 import { ApiResponse } from "@/models/ApiResponse";
 import { BfaProduct } from "@/models/BfaProduct";
-import{LookupType}from "@/models/LookupType";
+import { LookupType } from "@/models/LookupType";
+import{SystemDiscountScheduleProducts}from "@/models/SystemDiscountScheduleProducts";
+import { SystemDiscountSchedule } from "@/models/SystemDiscountSchedule";
 import { get, post } from "@/services/http";
