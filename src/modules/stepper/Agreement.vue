@@ -20,7 +20,7 @@
           </button>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item" v-if="hasAdditionalDiscounts">
           <button
             class="btn"
             :class="
@@ -41,10 +41,19 @@
   import AdditionalDiscountGrid from "@/components/ClientAgreement/AdditionalDiscountGrid.vue";
   import BfaProductGrid from "@/components/ClientAgreement/BfaProductGrid.vue";
   import ClientDetails from "@/components/common/ClientDetails.vue";
+  import { useWorkflowStore } from "@/stores/workflowStore";
 
-  import { ref } from "vue";
+  import { computed, ref } from "vue";
 
   const activeTab = ref<"bfa" | "discounts">("bfa");
+  const workflow = useWorkflowStore();
+  // expose reactive boolean
+  const hasAdditionalDiscounts = computed(
+    () => workflow.hasAdditionalDiscounts
+  );
+
+  // Optional: if you want to switch to the discounts tab automatically when the flag becomes true
+  // watch(hasAdditionalDiscounts, (v) => { if (v) activeTab.value = 'discounts' });
 </script>
 <style scoped>
   .header-row {

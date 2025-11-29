@@ -170,6 +170,10 @@
       }
       if (result.success && result.data) {
         await clientStore.setClientId(result.data.clientId, { load: true });
+        workOrdeStore.setHasAdditionalDiscounts(
+          Boolean(result.data.hasAdditionalDiscounts)
+        );
+
         Object.assign(BfaOption, result.data);
       }
     } catch (err) {

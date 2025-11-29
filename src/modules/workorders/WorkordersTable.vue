@@ -19,9 +19,13 @@
         </tr>
 
         <tr v-for="(it, idx) in items" :key="it.workOrderId">
-          <td><a href="#" @click.prevent="$emit('view', it)">{{ it.workOrderId }}</a></td>
+          <td>
+            <a href="#" @click.prevent="$emit('view', it)">{{
+              it.workOrderId
+            }}</a>
+          </td>
           <td>{{ it.clientName }}</td>
-          <td>{{ it.type }}</td>
+          <td>{{ it.workOrderName }}</td>
           <td>{{ it.status }}</td>
           <td>{{ it.email }}</td>
           <td>{{ formatDate(it.lastActivity) }}</td>
@@ -32,29 +36,29 @@
 </template>
 
 <script setup lang="ts">
-import type { WorkOrder } from "./WorkOrderType";
-import { toRef } from "vue";
+  import type { WorkOrderDetail } from "./WorkOrderType";
+  import { toRef } from "vue";
 
-const props = defineProps({
-  items: { type: Array as () => WorkOrder[], required: true },
-});
+  const props = defineProps({
+    items: { type: Array as () => WorkOrderDetail[], required: true },
+  });
 
-const emit = defineEmits<{
-  (e: "view", item: WorkOrder): void;  
-}>();
+  const emit = defineEmits<{
+    (e: "view", item: WorkOrderDetail): void;
+  }>();
 
-function formatDate(iso?: string) {
-  if (!iso) return "";
-  try {
-    return new Date(iso).toLocaleDateString();
-  } catch {
-    return iso;
+  function formatDate(iso?: string) {
+    if (!iso) return "";
+    try {
+      return new Date(iso).toLocaleDateString();
+    } catch {
+      return iso;
+    }
   }
-}
 </script>
 
 <style scoped>
-.table td {
-  vertical-align: middle;
-}
+  .table td {
+    vertical-align: middle;
+  }
 </style>

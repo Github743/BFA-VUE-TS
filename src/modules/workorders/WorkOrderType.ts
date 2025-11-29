@@ -1,7 +1,7 @@
-export interface WorkOrder {
+export interface WorkOrderDetail {
   workOrderId: string;
   clientName: string;
-  type: string;
+  workOrderName: string;
   status: string;
   email: string;
   lastActivity: string;
@@ -15,6 +15,8 @@ export interface WorkOrdersQuery {
   to?: string;
   page?: number;
   pageSize?: number;
+  sortField?: string;
+  sortDirection?: "asc" | "desc";
 }
 
 export interface PagedResult<T> {

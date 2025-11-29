@@ -142,6 +142,7 @@
         const useWorkOrderstore = useWorkflowStore();
         useWorkOrderstore.setWorkOrderId(createWO.data?.workOrderId ?? 0);
         useWorkOrderstore.setCurrentStep(0);
+        showToast("Work order created successfully.", "success");
         router.push({
           name: "IssueWorkflow",
         });

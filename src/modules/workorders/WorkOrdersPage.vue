@@ -20,7 +20,7 @@
       @page-size="onPageSize"
     />
 
-    <div v-if="loading" class="text-center my-3">
+    <div v-if="loading" class="loading-overlay">
       <div class="spinner-border" role="status"></div>
     </div>
   </div>
@@ -32,14 +32,20 @@
   import WorkOrdersTable from "./WorkordersTable.vue";
   import WorkOrdersPagination from "./WorkOrdersPagination.vue";
 
-  import type { WorkOrdersQuery, WorkOrder } from "./WorkOrderType";
+  import type { WorkOrdersQuery, WorkOrderDetail } from "./WorkOrderType";
   import { fetchWorkOrders } from "./WorkOrdersApi";
 
-  const items = ref<WorkOrder[]>([]);
+  import { useRouter } from "vue-router";
+  import { useWorkflowStore } from "@/stores/workflowStore";
+
+  const items = ref<WorkOrderDetail[]>([]);
   const total = ref(0);
   const page = ref(1);
   const pageSize = ref(10);
   const loading = ref(false);
+
+  const router = useRouter();
+  const workflow = useWorkflowStore();
 
   // keep last used filters so pagination uses same filters
   const currentFilters = ref<WorkOrdersQuery>({});
@@ -72,7 +78,7 @@
     loadWorkorders(currentFilters.value, newPage);
   }
 
-  function onEdit(item: WorkOrder) {
+  function onEdit(item: WorkOrderDetail) {
     // navigate or open modal
   }
   function onPageSize(newSize: number) {
@@ -82,9 +88,14 @@
     page.value = 1;
   }
 
-  function onDelete(item: WorkOrder) {}
+  function onDelete(item: WorkOrderDetail) {}
 
-  function onView(item: WorkOrder) {}
+  function onView(item: WorkOrderDetail) {
+    workflow.setWorkOrderId(1010694);
+    workflow.setCurrentStep(0);
+
+    router.push({ name: "IssueWorkflow" });
+  }
 
   // initial load: default empty filters
   loadWorkorders({}, 1);
@@ -92,4 +103,21 @@
 
 <style scoped>
   /* add page-specific style if needed */
+  .loading-overlay {
+    position: fixed; /* overlay the whole screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7); /* slight fade background */
+    display: flex;
+    align-items: center; /* vertical center */
+    justify-content: center; /* horizontal center */
+    z-index: 9999; /* stay on top */
+  }
+
+  .loading-spinner {
+    width: 3rem;
+    height: 3rem;
+  }
 </style>

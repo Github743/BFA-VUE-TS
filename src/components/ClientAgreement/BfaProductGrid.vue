@@ -152,9 +152,11 @@
   import AddDiscountModal from "./AddDiscountModal.vue";
   import { SaveDiscountPayload } from "./SaveDiscountPayload";
   import { WorkOrderClientAgreementEntityProduct } from "@/models/WorkOrderClientAgreementEntityProduct";
+  import { useWorkflowStore } from "@/stores/workflowStore";
 
+  const workOrdeStore = useWorkflowStore();
   const showAdd = ref(false);
-  const workOrderId = 1156999;
+  const workOrderId = workOrdeStore.workOrderId;
 
   const loading = ref(false);
   const showModal = ref(false);
@@ -217,7 +219,7 @@
   const loadProducts = async () => {
     try {
       loading.value = true;
-      const result = await getEntityProducts(1156999);
+      const result = await getEntityProducts(workOrderId);
 
       if (!result.success) {
         showToast("Invalid workorder id", "danger");
